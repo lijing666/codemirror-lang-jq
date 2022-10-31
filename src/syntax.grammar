@@ -1,26 +1,52 @@
 @top Program { expression* }
 
-@skip { space | LineComment }
+@skip { space }
 
 expression {
+  Identity | 
+  Channel |
+  Colon | 
+  Comma |
   Identifier |
+  Number |
   String |
   Boolean |
-  Application { "(" expression* ")" }
+  MathOperators |
+  Optional |
+  Object { "{" expression* "}" }
 }
 
+
 @tokens {
-  Identifier { $[a-zA-Z_\-0-9]+ }
+  Identifier { $[a-zA-Z_] $[a-zA-Z0-9_\'\-]* }
+
+  Number { $[0-9] $[a-zA-Z0-9.]* }
 
   String { '"' (!["\\] | "\\" _)* '"' }
 
-  Boolean { "#t" | "#f" }
+  Boolean { 'true' | 'false' }
 
-  LineComment { ";" ![\n]* }
+  @precedence { Boolean, Identifier }
 
   space { $[ \t\n\r]+ }
 
+  Identity { '.' | '..' }
+
+  Channel { '|' }
+
+  Colon { ':' }
+
+  Comma { ',' }
+
+  Optional { '?' }
+
+  MathOperators { '+' | '-' | '*' | '/' | '%' }
+
   "(" ")"
+
+  "{" "}"
+
+  "[" "]"
 }
 
 @detectDelim

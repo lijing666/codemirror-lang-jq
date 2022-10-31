@@ -1,21 +1,62 @@
-# CodeMirror 6 language package template
+# codemirror-lang-jq (no release)
+CodeMirror 6 language package for [jq](https://stedolan.github.io/jq/manual) json expression
 
-This is an example repository containing a minimal [CodeMirror](https://codemirror.net/6/) language support package. The idea is to clone it, rename it, and edit it to create support for a new language.
+# base usage
+```typescript
 
-Things you'll need to do (see the [language support example](https://codemirror.net/6/examples/lang-package/) for a more detailed tutorial):
+import { EditorState } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
+import { basicSetup } from 'codemirror';
+import { jq } from 'codemirror-lang-jq';
 
- * `git grep EXAMPLE` and replace all instances with your language name.
+new EditorView({
+  state: EditorState.create({
+    doc: `.a | .b | {d, e: .c}`,
+    extensions: [basicSetup, jq()],
+  }),
+  parent: document.querySelector('#editor'),
+});
+```
+# autocomplete settings
+```typescript
 
- * Rewrite the grammar in `src/syntax.grammar` to cover your language. See the [Lezer system guide](https://lezer.codemirror.net/docs/guide/#writing-a-grammar) for information on this file format.
+import { EditorState } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
+import { basicSetup } from 'codemirror';
+import { CompletionContext } from "@codemirror/autocomplete"
+import { jq, jqLanguage } from 'codemirror-lang-jq';
 
- * Adjust the metadata in `src/index.ts` to work with your new grammar.
+// example autocomplete parser
+const autocompleteParser = (acContext: CompletionContext) => {
+  //match input .
+  let identityStr = acContext.matchBefore(/.*\./)
+  if (!identityStr) {
+    return null
+  }
+  if (identityStr.from == identityStr.to && !acContext.explicit) {
+    return null
+  }
+  //give some autocomplete words
+  return {
+    from: identityStr.to,
+    options: [
+      { label: 'match', type: 'keyword' },
+      { label: 'hello', type: 'variable', info: '(World)' },
+      { label: 'magic', type: 'text', apply: '⠁⭒*.✩.*⭒⠁', detail: 'macro' }
+    ]
+  }
+}
+let autoCompletions = jqLanguage.data.of({
+  autocomplete: autocompleteParser
+});
+new EditorView({
+  state: EditorState.create({
+    doc: `.a | .b | {d, e: .c}`,
+    extensions: [basicSetup, jq(autoCompletions)],
+  }),
+  parent: document.querySelector('#editor'),
+});
+```
 
- * Adjust the grammar tests in `test/cases.txt`.
 
- * Build (`npm run prepare`) and test (`npm test`).
 
- * Rewrite this readme file.
-
- * Optionally add a license.
-
- * Publish. Put your package on npm under a name like `codemirror-lang-EXAMPLE`.

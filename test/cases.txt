@@ -1,7 +1,17 @@
+# Numbers
+
+1
+89
+100.55
+0.4
+
+==>
+
+Program(Number, Number, Number, Number)
 # Booleans
 
-#t
-#f
+true
+false
 
 ==>
 
@@ -25,17 +35,18 @@ Program(Identifier, Identifier)
 
 Program(String, String)
 
-# Applications
+# Objects
 
-(begin
-  (when #t
-    (print (concat "hello" " " "world")))
-  (print "DONE"))
+{.key1, user: {name: "张帆"}}
 
 ==>
 
-Program(Application(
-  Identifier,
-  Application(Identifier, Boolean, Application(
-    Identifier, Application(Identifier, String, String, String)))
-  Application(Identifier, String)))
+Program(Object("{",Identity,Identifier,Comma,Identifier,Colon,Object("{",Identifier,Colon,String,"}"),"}"))
+
+# filters
+
+.hello | {"ddd": 123}
+
+==>
+
+Program(Identity,Identifier,Channel,Object("{",String,Colon,Number,"}"))
